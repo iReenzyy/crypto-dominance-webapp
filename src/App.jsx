@@ -51,7 +51,7 @@ function App() {
                 <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
               ))}
             </Pie>
-            <Tooltip formatter={(v) => \`\${v.toFixed(2)}%\`} />
+            <Tooltip formatter={(v) => `${v.toFixed(2)}%`} />
             <Legend />
           </PieChart>
         </ResponsiveContainer>

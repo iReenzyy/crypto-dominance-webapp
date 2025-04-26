@@ -60,7 +60,7 @@ function App() {
                     cy="50%"
                     outerRadius={100}
                     fill="#8884d8"
-                    label
+                    label={({ name, value }) => `${name}: ${value.toFixed(2)}%`}
                   >
                     {dominanceData.map((entry, index) => (
                       <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />

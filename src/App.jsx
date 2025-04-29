@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import './index.css';
 
-const COLORS = ['#f97316', '#3b82f6', '#10b981'];
+const COLORS = ['#f97316', '#3b82f6', '#10b981', '#a78bfa']; // последний — ALTS
 
 function App() {
   const [showInfo, setShowInfo] = useState(false);
@@ -56,10 +56,15 @@ function App() {
       const json = await res.json();
       const data = json.data.market_cap_percentage;
       const keysToShow = ['btc', 'eth', 'usdt'];
+      const totalUsed = keysToShow.reduce((sum, key) => sum + data[key], 0);
+      const altDominance = 100 - totalUsed;
+      
       const chartData = keysToShow.map((key) => ({
         name: key.toUpperCase(),
         value: data[key]
       }));
+      
+      chartData.push({ name: 'ALTS', value: altDominance });
       setDominanceData(chartData);
       setLastUpdate(new Date().toLocaleTimeString());
       setLoading(false);
@@ -144,6 +149,8 @@ function App() {
                 <p>Доминация — это доля одного актива в общей капитализации всего крипторынка. Показывает, сколько он "весит" на рынке.</p>
                 <p>Например, если общая капитализация рынка стоит $100, а Биткоин — $60, его доминация = 60%.</p>
                 <p>Отслеживайте доминацию, чтобы понимать текущее настроение инвесторов.</p>
+                <p><strong>ALTS</strong> — совокупность всех остальных альткоинов, кроме BTC, ETH и USDT.</p>
+
                 <button
                   onClick={() => setShowInfo(false)}
                   className="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded block mx-auto"

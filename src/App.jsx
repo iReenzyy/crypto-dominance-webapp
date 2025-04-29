@@ -14,7 +14,14 @@ function App() {
   const [quizResult, setQuizResult] = useState(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
 
-  const quizQuestions = [
+  const shuffleAnswers = (questions) => {
+    return questions.map(q => ({
+      ...q,
+      answers: [...q.answers].sort(() => Math.random() - 0.5)
+    }));
+  };
+  
+  const originalQuestions = [
     {
       question: "Что означает рост доминации BTC?",
       answers: [
@@ -40,6 +47,8 @@ function App() {
       ]
     }
   ];
+  
+  const [quizQuestions, setQuizQuestions] = useState(() => shuffleAnswers(originalQuestions));  
 
   const fetchDominance = async () => {
     try {

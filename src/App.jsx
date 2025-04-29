@@ -5,6 +5,7 @@ import './index.css';
 const COLORS = ['#f97316', '#3b82f6', '#10b981'];
 
 function App() {
+  const [showInfo, setShowInfo] = useState(false);
   const [dominanceData, setDominanceData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(null);
@@ -120,6 +121,28 @@ function App() {
             >
               Пройти тест
             </button>
+
+            <button
+              onClick={() => setShowInfo(true)}
+              className="mt-4 bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Что такое доминация?
+            </button>
+
+            {showInfo && (
+              <div className="bg-gray-700 mt-4 p-4 rounded-lg text-sm text-gray-300">
+                <h2 className="font-bold text-lg mb-2 text-center">Что такое доминация?</h2>
+                <p>Доминация — это доля актива в общей капитализации крипторынка.</p>
+                <p>Например, высокая доминация BTC говорит о том, что рынок предпочитает надёжность.</p>
+                <p>Отслеживайте доминацию, чтобы понимать текущее настроение инвесторов.</p>
+                <button
+                  onClick={() => setShowInfo(false)}
+                  className="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded block mx-auto"
+                >
+                  Закрыть
+                </button>
+              </div>
+            )}
 
             {quizActive && (
               <div className="bg-gray-700 mt-6 p-4 rounded-lg text-sm text-gray-300">

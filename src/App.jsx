@@ -243,8 +243,10 @@ function App() {
               {showInfo && (
                 <div className="bg-gray-700 mt-4 p-4 rounded-lg text-sm text-gray-300">
                   <h2 className="font-bold text-lg mb-2 text-center">Что такое доминация?</h2>
-                  <p>Доминация — это доля актива в общей капитализации крипторынка.</p>
-                  <p>ALTS — совокупность всех остальных альткоинов, кроме BTC, ETH и USDT.</p>
+                  <p>Доминация — это доля одного актива в общей капитализации всего крипторынка. Показывает, сколько он "весит" на рынке.</p>
+                   <p>Например, если общая капитализация рынка стоит $100, а Биткоин — $60, его доминация = 60%.</p>
+                   <p>Отслеживайте доминацию, чтобы понимать текущее настроение инвесторов.</p>
+                   <p><strong>ALTS</strong> — совокупность всех остальных альткоинов, кроме BTC, ETH и USDT.</p>
                   <button
                     onClick={() => setShowInfo(false)}
                     className="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded block mx-auto"

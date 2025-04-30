@@ -64,6 +64,14 @@ function App() {
         { text: "Рост спроса на новые альткоины", correct: false },
         { text: "Переход рынка к бычьему тренду", correct: false }
       ]
+    },
+    {
+      question: "Что означает рост доминации ALTS?",
+      answers: [
+        { text: "Люди начинают активно инвестировать в менее известные монеты", correct: true },
+        { text: "Увеличение интереса к стейблкоинам", correct: false },
+        { text: "Признак ухода капитала в BTC", correct: false }
+      ]
     }
   ];
   

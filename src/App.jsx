@@ -16,7 +16,14 @@ function App() {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [tutorialStep, setTutorialStep] = useState(0);
   const [tutorialCompleted, setTutorialCompleted] = useState(false);
-  const [fearGreedIndex, setFearGreedIndex] = useState(null);
+  const [interval, setIntervalRange] = useState('1h');
+
+  const mockChanges = {
+    '1h': { btc: 0.4, eth: -0.2, usdt: 0.1, alts: -0.3 },
+    '6h': { btc: 1.2, eth: 0.8, usdt: -0.5, alts: -1.1 },
+    '12h': { btc: -0.3, eth: -0.6, usdt: 0.2, alts: 0.7 },
+    '24h': { btc: 0.9, eth: 0.5, usdt: 0.3, alts: -0.6 }
+  };
 
   const tutorialSlides = [
     {
@@ -106,25 +113,6 @@ function App() {
     }
   };
 
-  const fetchFearGreed = async () => {
-    try {
-      const res = await fetch('https://api.alternative.me/fng/?limit=1');
-      const json = await res.json();
-      const item = json.data[0];
-      setFearGreedIndex({
-        value: parseInt(item.value),
-        classification: item.value_classification
-      });
-    } catch (err) {
-      console.error("Ошибка загрузки индекса страха и жадности:", err);
-    }
-  };
-
-  const handleAnswer = (isCorrect) => {
-    setQuizAnswered(true);
-    setQuizResult(isCorrect);
-  };
-
   useEffect(() => {
     const completed = localStorage.getItem('tutorialCompleted');
     if (completed === 'true') {
@@ -132,13 +120,16 @@ function App() {
       setTutorialStep(tutorialSlides.length);
     }
     fetchDominance();
-    fetchFearGreed();
     const interval = setInterval(() => {
       fetchDominance();
-      fetchFearGreed();
     }, 30000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleAnswer = (isCorrect) => {
+    setQuizAnswered(true);
+    setQuizResult(isCorrect);
+  };
 
   return (
     <div className="min-h-screen text-white flex flex-col items-center justify-center p-4 animate-fade">
@@ -168,26 +159,6 @@ function App() {
             <div className="text-center py-10">⏳ Загрузка...</div>
           ) : (
             <>
-              <ul className="mb-4 text-center space-y-1">
-                {dominanceData.map((item) => {
-                  const prev = previousData.find(p => p.name === item.name)?.value;
-                  const diff = prev !== undefined ? item.value - prev : 0;
-                  const diffText = diff > 0 ? `+${diff.toFixed(2)}%` : `${diff.toFixed(2)}%`;
-                  const diffColor = diff > 0 ? 'text-green-400' : diff < 0 ? 'text-red-400' : 'text-gray-400';
-
-                  return (
-                    <li key={item.name}>
-                      <span className="font-semibold">{item.name}</span>: {item.value.toFixed(2)}%
-                      {prev !== undefined && (
-                        <span className={`ml-2 text-sm ${diffColor}`}>
-                          ({diffText})
-                        </span>
-                      )}
-                    </li>
-                  );
-                })}
-              </ul>
-
               <div className="h-72">
                 <ResponsiveContainer>
                   <PieChart>
@@ -211,21 +182,35 @@ function App() {
                 </ResponsiveContainer>
               </div>
 
-              {fearGreedIndex && (
-                <div className="mt-4 text-center">
-                  <p className="text-sm text-gray-400">Индекс страха и жадности:</p>
-                  <p className={`
-                    text-2xl font-bold 
-                    ${fearGreedIndex.value < 25 ? 'text-red-500' : ''}
-                    ${fearGreedIndex.value >= 25 && fearGreedIndex.value < 50 ? 'text-yellow-400' : ''}
-                    ${fearGreedIndex.value >= 50 && fearGreedIndex.value < 75 ? 'text-green-400' : ''}
-                    ${fearGreedIndex.value >= 75 ? 'text-blue-400' : ''}
-                  `}>
-                    {fearGreedIndex.value} — {fearGreedIndex.classification}
-                  </p>
+              <div className="mt-6">
+                <p className="text-sm text-gray-400 mb-2 text-center">Изменения за:</p>
+                <div className="flex justify-center gap-2 mb-4">
+                  {['1h', '6h', '12h', '24h'].map(range => (
+                    <button
+                      key={range}
+                      onClick={() => setIntervalRange(range)}
+                      className={`px-3 py-1 rounded-full font-semibold ${
+                        interval === range ? 'bg-blue-600 text-white' : 'bg-gray-700 text-gray-300'
+                      }`}
+                    >
+                      {range}
+                    </button>
+                  ))}
                 </div>
-              )}
-
+                <ul className="text-center space-y-1">
+                  {dominanceData.map((item) => {
+                    const change = mockChanges[interval][item.name.toLowerCase()] ?? 0;
+                    const changeColor = change > 0 ? 'text-green-400' : change < 0 ? 'text-red-400' : 'text-gray-400';
+                    const changeText = `${change > 0 ? '+' : ''}${change.toFixed(2)}%`;
+                    return (
+                      <li key={item.name}>
+                        <span className="font-semibold">{item.name}</span>: {item.value.toFixed(2)}%
+                        <span className={`ml-2 text-sm ${changeColor}`}>({changeText})</span>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
               <button
                 onClick={() => setQuizActive(true)}
                 className="mt-4 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
@@ -243,10 +228,8 @@ function App() {
               {showInfo && (
                 <div className="bg-gray-700 mt-4 p-4 rounded-lg text-sm text-gray-300">
                   <h2 className="font-bold text-lg mb-2 text-center">Что такое доминация?</h2>
-                  <p>Доминация — это доля одного актива в общей капитализации всего крипторынка. Показывает, сколько он "весит" на рынке.</p>
-                   <p>Например, если общая капитализация рынка стоит $100, а Биткоин — $60, его доминация = 60%.</p>
-                   <p>Отслеживайте доминацию, чтобы понимать текущее настроение инвесторов.</p>
-                   <p><strong>ALTS</strong> — совокупность всех остальных альткоинов, кроме BTC, ETH и USDT.</p>
+                  <p>Доминация — это доля актива в общей капитализации крипторынка.</p>
+                  <p>ALTS — совокупность всех остальных альткоинов, кроме BTC, ETH и USDT.</p>
                   <button
                     onClick={() => setShowInfo(false)}
                     className="mt-4 bg-red-600 hover:bg-red-700 text-white font-bold py-1 px-3 rounded block mx-auto"
@@ -255,6 +238,7 @@ function App() {
                   </button>
                 </div>
               )}
+
               {quizActive && (
                 <div className="bg-gray-700 mt-6 p-4 rounded-lg text-sm text-gray-300">
                   {!quizAnswered ? (

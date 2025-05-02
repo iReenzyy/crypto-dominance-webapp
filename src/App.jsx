@@ -18,6 +18,7 @@ function App() {
   const [tutorialCompleted, setTutorialCompleted] = useState(false);
   const [interval, setIntervalRange] = useState('1h');
   const [showDailyTip, setShowDailyTip] = useState(false);
+  const [activeTip, setActiveTip] = useState(null);
 
   const mockChanges = {
     '1h': { btc: 0.4, eth: -0.2, usdt: 0.1, alts: -0.3 },
@@ -246,11 +247,18 @@ function App() {
                       <li key={item.name}>
                         <span className="font-semibold">{item.name}</span>: {item.value.toFixed(2)}%
                         <span
-                          className={`ml-2 text-sm ${changeColor}`}
+                          className={`ml-2 text-sm ${changeColor} cursor-pointer`}
                           title={getTipText(item.name.toLowerCase(), change)}
+                          onClick={() => setActiveTip(prev => prev === item.name ? null : item.name)}
                         >
                           ({changeText})
                         </span>
+                        
+                        {activeTip === item.name && (
+                          <p className="text-xs text-gray-300 mt-1">
+                            {getTipText(item.name.toLowerCase(), change)}
+                          </p>
+                        )}
                       </li>
                     );
                   })}

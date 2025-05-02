@@ -148,6 +148,11 @@ function App() {
     return () => clearInterval(interval);
   }, []);  
 
+  const handleAnswer = (isCorrect) => {
+    setQuizAnswered(true);
+    setQuizResult(isCorrect);
+  };  
+
   return (
     <div className="min-h-screen text-white flex flex-col items-center justify-center p-4 animate-fade">
       {!tutorialCompleted && tutorialStep < tutorialSlides.length ? (

@@ -241,10 +241,16 @@ function App() {
                     const change = mockChanges[interval][item.name.toLowerCase()] ?? 0;
                     const changeColor = change > 0 ? 'text-green-400' : change < 0 ? 'text-red-400' : 'text-gray-400';
                     const changeText = `${change > 0 ? '+' : ''}${change.toFixed(2)}%`;
+
                     return (
                       <li key={item.name}>
                         <span className="font-semibold">{item.name}</span>: {item.value.toFixed(2)}%
-                        <span className={`ml-2 text-sm ${changeColor}`}>({changeText})</span>
+                        <span
+                          className={`ml-2 text-sm ${changeColor}`}
+                          title={getTipText(item.name.toLowerCase(), change)}
+                        >
+                          ({changeText})
+                        </span>
                       </li>
                     );
                   })}

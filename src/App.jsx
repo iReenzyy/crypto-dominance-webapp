@@ -17,6 +17,7 @@ function App() {
   const [tutorialStep, setTutorialStep] = useState(0);
   const [tutorialCompleted, setTutorialCompleted] = useState(false);
   const [interval, setIntervalRange] = useState('1h');
+  const [showDailyTip, setShowDailyTip] = useState(false);
 
   const mockChanges = {
     '1h': { btc: 0.4, eth: -0.2, usdt: 0.1, alts: -0.3 },
@@ -24,6 +25,17 @@ function App() {
     '12h': { btc: -0.3, eth: -0.6, usdt: 0.2, alts: 0.7 },
     '24h': { btc: 0.9, eth: 0.5, usdt: 0.3, alts: -0.6 }
   };
+
+  const getTipText = (key, change) => {
+    const up = change > 0;
+    const tips = {
+      btc: up ? "Инвесторы уходят в Биткоин" : "Выход капитала из BTC",
+      eth: up ? "Рост интереса к dApps" : "Снижение активности на dApps",
+      usdt: up ? "Усиление перехода в стейблкоины" : "Капитал уходит из стейблкоинов",
+      alts: up ? "Возможный рост интереса к альтам" : "Возможный выход из альтов"
+    };
+    return tips[key];
+  };  
 
   const tutorialSlides = [
     {
@@ -119,17 +131,22 @@ function App() {
       setTutorialCompleted(true);
       setTutorialStep(tutorialSlides.length);
     }
+  
     fetchDominance();
+  
+    // ⬇️ сюда вставь этот блок
+    const lastTipDate = localStorage.getItem('lastTipDate');
+    const today = new Date().toISOString().split('T')[0];
+    if (lastTipDate !== today) {
+      setShowDailyTip(true);
+      localStorage.setItem('lastTipDate', today);
+    }
+  
     const interval = setInterval(() => {
       fetchDominance();
     }, 30000);
     return () => clearInterval(interval);
-  }, []);
-
-  const handleAnswer = (isCorrect) => {
-    setQuizAnswered(true);
-    setQuizResult(isCorrect);
-  };
+  }, []);  
 
   return (
     <div className="min-h-screen text-white flex flex-col items-center justify-center p-4 animate-fade">
@@ -181,6 +198,23 @@ function App() {
                   </PieChart>
                 </ResponsiveContainer>
               </div>
+
+              {showDailyTip && (
+                <div className="bg-indigo-700 text-white text-sm p-4 rounded-lg mt-4 space-y-1">
+                  <p className="font-semibold">📌 Сегодня:</p>
+                  {['btc', 'eth', 'usdt', 'alts'].map((key) => {
+                    const change = mockChanges[interval][key];
+                    const sign = change > 0 ? '+' : '';
+                    const text = getTipText(key, change);
+                    return (
+                      <p key={key}>
+                        {key.toUpperCase()}: {sign}{change.toFixed(2)}% ({text})
+                      </p>
+                    );
+                  })}
+                  <p className="mt-2 text-gray-300">Данные помогут оценить общее настроение рынка.</p>
+                </div>
+              )}
 
               <div className="mt-6">
                 <p className="text-sm text-gray-400 mb-2 text-center">Изменения за:</p>

@@ -26,7 +26,6 @@ function App() {
     '12h': { btc: -0.3, eth: -0.6, usdt: 0.2, alts: 0.7 },
     '24h': { btc: 0.9, eth: 0.5, usdt: 0.3, alts: -0.6 }
   };
-
   const getTipText = (key, change) => {
     const up = change > 0;
     const tips = {

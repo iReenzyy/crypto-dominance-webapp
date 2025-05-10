@@ -117,8 +117,10 @@ function App() {
       }));
       chartData.push({ name: 'ALTS', value: altDominance });
 
-      setPreviousData(dominanceData);
-      setDominanceData(chartData);
+      setDominanceData(prev => {
+        setPreviousData(prev); // сохраняем именно предыдущее
+        return chartData;      // а теперь устанавливаем новое
+      });      
       setLastUpdate(new Date().toLocaleTimeString());
       setLoading(false);
     } catch (err) {

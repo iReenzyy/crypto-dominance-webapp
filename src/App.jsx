@@ -117,14 +117,12 @@ const fetchDominance = async () => {
     }));
     chartData.push({ name: 'ALTS', value: altDominance });
 
-    // 🧠 Сохраняем СНАЧАЛА текущие данные
-    const currentDataCopy = [...dominanceData];
+    console.log("PREVIOUS:", dominanceData);
+    console.log("CHART:", chartData);
 
-    // 💾 Обновляем сначала dominanceData
+    // 💥 Самое главное: сохранить СТАРЫЕ данные ДО обновления
+    setPreviousData([...dominanceData]);  // ← здесь FIX
     setDominanceData(chartData);
-
-    // 🆚 Потом сохраняем previousData для сравнения
-    setPreviousData(currentDataCopy);
 
     setLastUpdate(new Date().toLocaleTimeString());
     setLoading(false);
@@ -132,7 +130,6 @@ const fetchDominance = async () => {
     console.error('Ошибка при загрузке данных:', err);
   }
 };
-
 
   useEffect(() => {
     const completed = localStorage.getItem('tutorialCompleted');

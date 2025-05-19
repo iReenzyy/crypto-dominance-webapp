@@ -103,31 +103,29 @@ function App() {
 
   const [quizQuestions, setQuizQuestions] = useState(() => shuffleAnswers(originalQuestions));
   const fetchDominance = async () => {
-    try {
-      const res = await fetch('https://api.coingecko.com/api/v3/global');
-      const json = await res.json();
-      const data = json.data.market_cap_percentage;
-      const keysToShow = ['btc', 'eth', 'usdt'];
-      const totalUsed = keysToShow.reduce((sum, key) => sum + data[key], 0);
-      const altDominance = 100 - totalUsed;
+  try {
+    const res = await fetch('https://api.coingecko.com/api/v3/global');
+    const json = await res.json();
+    const data = json.data.market_cap_percentage;
+    const keysToShow = ['btc', 'eth', 'usdt'];
+    const totalUsed = keysToShow.reduce((sum, key) => sum + data[key], 0);
+    const altDominance = 100 - totalUsed;
 
-      const chartData = keysToShow.map((key) => ({
-        name: key.toUpperCase(),
-        value: data[key]
-      }));
-      chartData.push({ name: 'ALTS', value: altDominance });
+    const chartData = keysToShow.map((key) => ({
+      name: key.toUpperCase(),
+      value: data[key]
+    }));
+    chartData.push({ name: 'ALTS', value: altDominance });
 
-    setDominanceData(prev => {
-      setPreviousData([...prev]);       // клон предыдущих значений
-      return [...chartData];            // клон новых значений
-    });
-        
-      setLastUpdate(new Date().toLocaleTimeString());
-      setLoading(false);
-    } catch (err) {
-      console.error('Ошибка при загрузке данных:', err);
-    }
-  };
+    // ⬅️ Сохраняем прошлое значение до обновления!
+    setPreviousData(dominanceData); 
+    setDominanceData(chartData);
+    setLastUpdate(new Date().toLocaleTimeString());
+    setLoading(false);
+  } catch (err) {
+    console.error('Ошибка при загрузке данных:', err);
+  }
+};
 
   useEffect(() => {
     const completed = localStorage.getItem('tutorialCompleted');

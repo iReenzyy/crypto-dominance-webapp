@@ -117,10 +117,11 @@ function App() {
       }));
       chartData.push({ name: 'ALTS', value: altDominance });
 
-      setDominanceData(prev => {
-        setPreviousData(prev); // сохраняем именно предыдущее
-        return chartData;      // а теперь устанавливаем новое
-      });      
+    setDominanceData(prev => {
+      setPreviousData([...prev]);       // клон предыдущих значений
+      return [...chartData];            // клон новых значений
+    });
+        
       setLastUpdate(new Date().toLocaleTimeString());
       setLoading(false);
     } catch (err) {

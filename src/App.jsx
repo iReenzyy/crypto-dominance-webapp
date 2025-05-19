@@ -102,7 +102,7 @@ function App() {
   };
 
   const [quizQuestions, setQuizQuestions] = useState(() => shuffleAnswers(originalQuestions));
-  const fetchDominance = async () => {
+const fetchDominance = async () => {
   try {
     const res = await fetch('https://api.coingecko.com/api/v3/global');
     const json = await res.json();
@@ -117,15 +117,22 @@ function App() {
     }));
     chartData.push({ name: 'ALTS', value: altDominance });
 
-    // ⬅️ Сохраняем прошлое значение до обновления!
-    setPreviousData(dominanceData); 
+    // 🧠 Сохраняем СНАЧАЛА текущие данные
+    const currentDataCopy = [...dominanceData];
+
+    // 💾 Обновляем сначала dominanceData
     setDominanceData(chartData);
+
+    // 🆚 Потом сохраняем previousData для сравнения
+    setPreviousData(currentDataCopy);
+
     setLastUpdate(new Date().toLocaleTimeString());
     setLoading(false);
   } catch (err) {
     console.error('Ошибка при загрузке данных:', err);
   }
 };
+
 
   useEffect(() => {
     const completed = localStorage.getItem('tutorialCompleted');
